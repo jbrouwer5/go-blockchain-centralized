@@ -1,0 +1,32 @@
+FROM golang:1.21.6
+
+WORKDIR /blockchain
+
+COPY ../go.mod ../go.sum ./
+
+RUN go mod download
+
+COPY node/ ./node/
+COPY proto/ ./proto/
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /full-node ./node/*.go
+
+ENV PORT=58334
+EXPOSE ${PORT}
+
+CMD ["/full-node"]
+
+# docker build -f Dockerfile.node --tag full-node .
+# from blockchain-dist 
+
+# docker run --name full-node -p 58334:58334 --link dns-seed full-node (I LIKE THIS)
+# docker run --name full-nodeB -p 58335:58335 --link dns-seed full-node 
+
+# reset dns 
+# port 4
+# build
+# start node 1 
+# port 5 
+# build 
+# start node 2 
+

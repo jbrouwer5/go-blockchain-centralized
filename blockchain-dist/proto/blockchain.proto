@@ -1,0 +1,87 @@
+
+syntax = "proto3";
+
+option go_package = "/proto;blockchain";
+
+package blockchain;
+
+// Distribution functions of the blockchain
+service Distribution {
+  // Registration and Handshakes for the nodes and DNS
+  rpc registrar (Registration) returns (IPReply) {}
+  rpc handshake (Handshake) returns (KnownPeers) {}
+  rpc newTransactionBroadcast (Transaction) returns (Empty) {}
+  rpc newBlockBroadcast (Block) returns (Empty) {}
+}
+
+// null return 
+message Empty {
+
+}
+
+// The registration response message containing the nodes IP
+message IPReply {
+  string ip = 1;
+}
+
+// The handshake response message containing the list of known peers IPs
+message KnownPeers {
+  repeated string ips = 1;
+}
+
+// Registration Object 
+message Registration {
+  int32 nVersion = 1;
+  int64 nTime = 2; 
+  string addrMe = 3; 
+}; 
+
+// Handshake Object 
+message Handshake {
+  int32 nVersion = 1;
+  int64 nTime = 2; 
+  string addrMe = 3; 
+  int32 bestHeight = 4; 
+}; 
+
+
+// Output object
+message Output {
+	int32 Value = 1; 
+	int32 Index = 2;
+	string Script = 3; 
+}
+
+// Transaction Object 
+message Transaction {
+  int32 VersionNumber = 1; 
+  int32 InCounter = 2; 
+  repeated string ListOfInputs = 3; 
+  int32 OutCounter = 4; 
+  repeated Output ListOfOutputs = 5; 
+  string OutputsString = 6; 
+  string TransactionHash = 7; 
+}
+
+// Block object 
+message Block {
+    int32 MagicNumber = 1; 
+    int32 Blocksize = 2; 
+    Header BlockHeader = 3; 
+    int32 TransactionCounter = 4; 
+    repeated Transaction Transactions = 5; 
+    string Blockhash = 6; 
+}
+
+message Header {
+    int32 Version = 1; 
+    string hashPrevBlock = 2; 
+    string hashMerkleRoot = 3; 
+    int64 Timestamp = 4; 
+    int32 Bits = 5; 
+    uint32 Nonce = 6; 
+}
+
+// use from blockchain-dist directory
+// protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative     proto/helloworld.proto
+// protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative     proto/blockchain.proto

@@ -1,0 +1,25 @@
+FROM golang:1.21.6
+
+WORKDIR /blockchain
+
+COPY ../go.mod ../go.sum ./
+
+RUN go mod download
+
+COPY dns/ ./dns/
+COPY proto/ ./proto/
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /dns-seed ./dns/main.go
+
+EXPOSE 58333
+
+CMD ["/dns-seed"]
+
+# CMD ["./dns-seed"]
+
+# docker build -f Dockerfile.dns --tag dns-seed .
+# from blockchain-dist 
+
+# docker run --link dns-seed --name full-node full-nodee (I LIKE THIS)
+# docker run -d -p 58333:58333/udp --name dns-seed dns-seed
+
